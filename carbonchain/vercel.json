@@ -2,4 +2,5 @@
   "buildCommand": "next build",
   "installCommand": "npm install",
   "framework": "nextjs",
+  "nodeVersion": "22.x"
 }
