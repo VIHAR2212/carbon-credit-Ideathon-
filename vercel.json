@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd carbonchain && npm install && npm run build",
+  "installCommand": "cd carbonchain && npm install",
+  "outputDirectory": "carbonchain/.next",
+  "framework": "nextjs"
+}
