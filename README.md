@@ -89,35 +89,35 @@ functions, so no bug in the application layer can violate it.
 
 ```
                               ┌──────────────────────┐
-                              │        USERS           │
-                              │  Entities · Verifiers   │
-                              │  Traders · Auditors      │
-                              │  Registry Admins          │
-                              └───────────┬──────────────┘
+                              │        USERS         │
+                              │  Entities · Verifiers│
+                              │  Traders · Auditors  │
+                              │  Registry Admins     │
+                              └───────────┬──────────┘
                                           │
                                           ▼
                        ┌─────────────────────────────────┐
-                       │         FRONTEND (Vercel)         │
-                       │   Next.js · TypeScript · Tailwind │
-                       │   Role-aware UI · Supabase Auth    │
+                       │         FRONTEND (Vercel)       │
+                       │ Next.js · TypeScript · Tailwind │
+                       │   Role-aware UI · Supabase Auth │
                        └───────────────┬─────────────────┘
                                        │  HTTPS + Bearer JWT
                                        ▼
                        ┌─────────────────────────────────┐
-                       │         BACKEND (Render)          │
-                       │   Express API · RBAC middleware   │
-                       │   Deterministic calc engine        │
-                       │   Anomaly rules · Audit logging     │
+                       │         BACKEND (Render)        │
+                       │   Express API · RBAC middleware │
+                       │   Deterministic calc engine     │
+                       │   Anomaly rules · Audit logging │
                        └───────────────┬─────────────────┘
                                        │  service_role
                                        ▼
                        ┌─────────────────────────────────┐
-                       │       DATABASE (Supabase)          │
-                       │   Postgres · Row-Level Security     │
-                       │   Atomic RPC functions               │
-                       │   Status-transition triggers          │
-                       │   Append-only event & audit logs       │
-                       └─────────────────────────────────────┘
+                       │       DATABASE (Supabase)       │
+                       │   Postgres · Row-Level Security │
+                       │   Atomic RPC functions          │
+                       │   Status-transition triggers    │
+                       │   Append-only event & audit logs│
+                       └─────────────────────────────────┘
 ```
 
 **Why this shape matters:** the frontend never talks to the database
@@ -134,58 +134,58 @@ permission check.
          │  CSV / API / simulated IoT
          ▼
    ┌─────────────┐
-   │  MONITORING  │  meter readings ingested + validated
+   │  MONITORING │  meter readings ingested + validated
    └──────┬──────┘
           │
           ▼
    ┌───────────────────────┐
-   │ EMISSIONS CALCULATION  │  deterministic, versioned, reproducible
+   │ EMISSIONS CALCULATION │  deterministic, versioned, reproducible
    └──────────┬────────────┘
               │
               ▼
    ┌─────────────────┐        ┌────────────────────┐
-   │    MRV REPORT     │──────▶│  ANOMALY DETECTION   │
-   └────────┬─────────┘        └──────────┬─────────┘
+   │    MRV REPORT   │────▶  │ ANOMALY DETECTION  │
+   └────────┬────────┘        └──────────┬─────────┘
             │                            │ flagged → human review
             │ ◀──────────────────────────┘ resolved
             ▼
    ┌─────────────────┐
-   │   VERIFICATION    │  independent agency · conflict-of-interest
-   └────────┬─────────┘  blocked at the database trigger level
+   │   VERIFICATION  │  independent agency · conflict-of-interest
+   └────────┬────────┘  blocked at the database trigger level
             │ approved
             ▼
    ┌─────────────────┐
-   │   ELIGIBILITY      │  one verification → exactly one issuance
-   └────────┬─────────┘  (unique constraint prevents double issuance)
+   │   ELIGIBILITY   │  one verification → exactly one issuance
+   └────────┬────────┘  (unique constraint prevents double issuance)
             │
             ▼
    ┌─────────────────┐
-   │  CCC ISSUANCE      │  atomic Postgres function — mints the whole
-   └────────┬─────────┘  batch or none of it, never partially
+   │  CCC ISSUANCE   │  atomic Postgres function — mints the whole
+   └────────┬────────┘  batch or none of it, never partially
             │
             ▼
    ┌─────────────────┐
-   │    REGISTRY         │  unique serial · full provenance chain
-   └────────┬─────────┘
+   │    REGISTRY     │  unique serial · full provenance chain
+   └────────┬────────┘
             │
             ▼
    ┌─────────────────┐
-   │   OWNERSHIP          │
-   └────────┬─────────┘
+   │   OWNERSHIP     │
+   └────────┬────────┘
             │
             ▼
    ┌─────────────────┐
-   │  MARKETPLACE         │  SELL locks real owned credits immediately
-   └────────┬─────────┘
+   │  MARKETPLACE    │  SELL locks real owned credits immediately
+   └────────┬────────┘
             │
             ▼
    ┌─────────────────┐
-   │   SETTLEMENT          │  atomic trade: ownership + trade record +
-   └────────┬─────────┘  audit event, all-or-nothing
+   │   SETTLEMENT    │  atomic trade: ownership + trade record +
+   └────────┬────────┘  audit event, all-or-nothing
             │
             ▼
    ┌───────────────────────┐
-   │  SURRENDER / RETIREMENT │  permanent · terminal · database-enforced
+   │SURRENDER / RETIREMENT │  permanent · terminal · database-enforced
    └───────────────────────┘
 ```
 
