@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase-client";
 import { api, ApiError } from "@/lib/api-client";
@@ -21,6 +21,7 @@ interface AuthContextValue {
   loading: boolean;
   error: string | null;
   signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<{ needsEmailConfirmation: boolean }>;
   signOut: () => Promise<void>;
 }
 
@@ -31,6 +32,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<CarbonChainProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Mirrors `profile` for use inside the onAuthStateChange listener below,
+  // which is registered once (empty-ish dep array) and would otherwise
+  // close over a stale `profile` value from its first render.
+  const profileRef = useRef<CarbonChainProfile | null>(null);
+  useEffect(() => {
+    profileRef.current = profile;
+  }, [profile]);
 
   const loadProfile = useCallback(async () => {
     try {
@@ -57,15 +66,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
       setSession(newSession);
-      if (newSession) {
-        setLoading(true);
-        loadProfile().finally(() => setLoading(false));
-      } else {
+
+      if (!newSession) {
         setProfile(null);
         setLoading(false);
+        return;
       }
+
+      // Supabase fires this listener on routine token refreshes too —
+      // e.g. every time the tab regains focus after being backgrounded.
+      // Only show the full loading screen for a genuinely new sign-in;
+      // a background token refresh should never re-trigger it, since we
+      // already have a valid profile loaded from before.
+      const isRoutineRefresh = event === "TOKEN_REFRESHED" || event === "INITIAL_SESSION";
+      if (isRoutineRefresh && profileRef.current) {
+        return;
+      }
+
+      setLoading(true);
+      loadProfile().finally(() => setLoading(false));
     });
 
     return () => listener.subscription.unsubscribe();
@@ -80,13 +101,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const signUp = useCallback(async (email: string, password: string) => {
+    setError(null);
+    const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
+    if (signUpError) {
+      setError(signUpError.message);
+      throw signUpError;
+    }
+    // If email confirmation is required, Supabase returns a user but no
+    // active session yet — the account exists, but can't sign in until
+    // confirmed. Either way, this account has no `profiles` row yet;
+    // that's expected — a registry administrator provisions the role and
+    // organization afterward. The "Account not fully provisioned" screen
+    // in page.tsx already handles that state once they do get a session.
+    return { needsEmailConfirmation: !data.session };
+  }, []);
+
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setProfile(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ session, profile, loading, error, signIn, signOut }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ session, profile, loading, error, signIn, signUp, signOut }}>{children}</AuthContext.Provider>
   );
 }
 

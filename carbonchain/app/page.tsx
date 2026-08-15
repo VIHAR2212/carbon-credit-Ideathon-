@@ -3,14 +3,16 @@
 import { useAuth } from "@/lib/auth-context";
 import { LoginScreen } from "@/components/shared/login-screen";
 import { CarbonChainApp } from "@/components/carbonchain-app";
+import { RippleLoader } from "@/components/ui/ripple-loader";
 
 export default function Home() {
   const { session, profile, loading, error, signOut } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-carbon-950">
-        <div className="text-carbon-400 text-xs font-mono">Loading CarbonChain...</div>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6">
+        <RippleLoader cellSize={22} />
+        <div className="text-carbon-300 text-xs font-mono tracking-wide">Loading CarbonChain...</div>
       </div>
     );
   }

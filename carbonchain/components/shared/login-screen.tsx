@@ -2,23 +2,58 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
-import { RippleLoader } from "@/components/ui/ripple-loader";
+
+type Mode = "signin" | "signup";
 
 export function LoginScreen() {
-  const { signIn } = useAuth();
+  const { signIn, signUp } = useAuth();
+  const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [signupNotice, setSignupNotice] = useState<string | null>(null);
+
+  const switchMode = (next: Mode) => {
+    setMode(next);
+    setLocalError(null);
+    setSignupNotice(null);
+    setPassword("");
+    setConfirmPassword("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError(null);
+    setSignupNotice(null);
+
+    if (mode === "signup" && password !== confirmPassword) {
+      setLocalError("Passwords do not match.");
+      return;
+    }
+    if (mode === "signup" && password.length < 8) {
+      setLocalError("Password must be at least 8 characters.");
+      return;
+    }
+
     setSubmitting(true);
     try {
-      await signIn(email, password);
+      if (mode === "signin") {
+        await signIn(email, password);
+      } else {
+        const { needsEmailConfirmation } = await signUp(email, password);
+        setSignupNotice(
+          needsEmailConfirmation
+            ? "Account created. Check your email to confirm before signing in."
+            : "Account created. A registry administrator needs to assign your role and organization before you can access the registry — contact them, then sign in below."
+        );
+        setMode("signin");
+        setPassword("");
+        setConfirmPassword("");
+      }
     } catch (err) {
-      setLocalError(err instanceof Error ? err.message : "Sign-in failed");
+      setLocalError(err instanceof Error ? err.message : mode === "signin" ? "Sign-in failed" : "Registration failed");
     } finally {
       setSubmitting(false);
     }
@@ -40,11 +75,39 @@ export function LoginScreen() {
         </div>
 
         <form onSubmit={handleSubmit} className="bg-carbon-850/90 backdrop-blur-md border border-carbon-750 rounded-3xl p-6 space-y-4 shadow-2xl">
-          <div>
-            <h2 className="text-base font-bold text-white">Sign in</h2>
-            <p className="text-xs text-carbon-400 mt-1">Registry access is provisioned by your administrator.</p>
+          <div className="flex items-center bg-carbon-900 p-1 rounded-xl border border-carbon-750">
+            <button
+              type="button"
+              onClick={() => switchMode("signin")}
+              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                mode === "signin" ? "bg-carbon-750 text-white" : "text-carbon-400 hover:text-slate-200"
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => switchMode("signup")}
+              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                mode === "signup" ? "bg-carbon-750 text-white" : "text-carbon-400 hover:text-slate-200"
+              }`}
+            >
+              Register
+            </button>
           </div>
 
+          <div>
+            <h2 className="text-base font-bold text-white">{mode === "signin" ? "Sign in" : "Create an account"}</h2>
+            <p className="text-xs text-carbon-400 mt-1">
+              {mode === "signin"
+                ? "Registry access is provisioned by your administrator."
+                : "New accounts still need a role assigned by a registry administrator before use."}
+            </p>
+          </div>
+
+          {signupNotice && (
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-xl">{signupNotice}</div>
+          )}
           {localError && (
             <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-xl">{localError}</div>
           )}
@@ -73,9 +136,26 @@ export function LoginScreen() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-carbon-900 border border-carbon-750 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-brand-500 font-mono disabled:opacity-60"
                 placeholder="••••••••"
-                autoComplete="current-password"
+                autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                minLength={mode === "signup" ? 8 : undefined}
               />
             </div>
+            {mode === "signup" && (
+              <div>
+                <label className="text-carbon-400 block mb-1">Confirm Password</label>
+                <input
+                  type="password"
+                  required
+                  disabled={submitting}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full bg-carbon-900 border border-carbon-750 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-brand-500 font-mono disabled:opacity-60"
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  minLength={8}
+                />
+              </div>
+            )}
           </div>
 
           <button
@@ -83,7 +163,7 @@ export function LoginScreen() {
             disabled={submitting}
             className="w-full py-2.5 bg-brand-500 hover:bg-brand-400 disabled:opacity-90 disabled:cursor-not-allowed text-black font-bold text-xs rounded-xl transition-colors flex items-center justify-center min-h-[38px]"
           >
-            {submitting ? <RippleLoader /> : "SIGN IN"}
+            {submitting ? (mode === "signin" ? "Signing in..." : "Creating account...") : mode === "signin" ? "SIGN IN" : "CREATE ACCOUNT"}
           </button>
         </form>
 
