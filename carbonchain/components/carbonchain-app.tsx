@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import { Icons } from "./shared/icons";
 import { HeaderGlobalSearch } from "./shared/header-global-search";
 import { ViewDashboard } from "./views/view-dashboard";
@@ -94,9 +95,7 @@ export function CarbonChainApp() {
         <div>
           <div className="p-6 border-b border-carbon-800/60">
             <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-black font-extrabold text-lg">
-                C
-              </div>
+              <Image src="/logo-icon.png" alt="CarbonChain" width={32} height={32} className="w-8 h-8 shrink-0" priority />
               <div>
                 <h1 className="font-extrabold tracking-tight text-white text-base leading-none">CARBONCHAIN</h1>
                 <span className="text-[10px] text-carbon-400 font-medium block mt-1 leading-tight">

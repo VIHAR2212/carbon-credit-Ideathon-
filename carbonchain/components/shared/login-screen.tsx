@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useAuth } from "@/lib/auth-context";
 
 type Mode = "signin" | "signup";
@@ -63,9 +64,7 @@ export function LoginScreen() {
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-sm mx-auto">
         <div className="flex items-center space-x-2.5 justify-center mb-8">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-black font-extrabold text-lg">
-            C
-          </div>
+          <Image src="/logo-icon.png" alt="CarbonChain" width={36} height={36} className="w-9 h-9 shrink-0" priority />
           <div>
             <h1 className="font-extrabold tracking-tight text-white text-base leading-none">CARBONCHAIN</h1>
             <span className="text-[10px] text-carbon-200 font-medium block mt-1 leading-tight">
