@@ -7,17 +7,17 @@ const styles: Record<string, string> = {
 
   PENDING: "bg-amber-500/10 text-amber-400 border-amber-500/30 border",
   "Needs Review": "bg-amber-500/10 text-amber-400 border-amber-500/30 border",
-  Processing: "bg-sky-500/10 text-sky-400 border-sky-500/30 border",
-  IN_TRANSFER: "bg-sky-500/10 text-sky-400 border-sky-500/30 border",
+  Processing: "bg-carbon-600/30 text-carbon-200 border-carbon-500/40 border",
+  IN_TRANSFER: "bg-carbon-600/30 text-carbon-200 border-carbon-500/40 border",
   "UNDER REVIEW": "bg-amber-500/10 text-amber-400 border-amber-500/30 border",
 
   FROZEN: "bg-rose-500/10 text-rose-400 border-rose-500/30 border",
   REJECTED: "bg-rose-500/10 text-rose-400 border-rose-500/30 border",
   CRITICAL: "bg-rose-500/10 text-rose-400 border-rose-500/30 border",
 
-  RETIRED: "bg-purple-500/10 text-purple-400 border-purple-500/30 border",
-  PERMANENTLY_RETIRED: "bg-purple-500/10 text-purple-400 border-purple-500/30 border",
-  CURRENT_OWNER: "bg-blue-500/10 text-blue-400 border-blue-500/30 border",
+  RETIRED: "bg-amber-700/15 text-amber-300 border-amber-700/40 border",
+  PERMANENTLY_RETIRED: "bg-amber-700/15 text-amber-300 border-amber-700/40 border",
+  CURRENT_OWNER: "bg-carbon-600/30 text-carbon-200 border-carbon-500/40 border",
 };
 
 export function StatusBadge({ status }: { status: string }) {

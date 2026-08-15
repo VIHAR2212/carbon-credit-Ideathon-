@@ -1,3 +1,5 @@
+// LEGACY FILE — kept for the existing /api/keep-alive route.
+// New backend code uses src/lib/supabase.js (service role + anon clients).
 import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = process.env.SUPABASE_URL;

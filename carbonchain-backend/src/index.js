@@ -3,12 +3,24 @@ import express from "express";
 import cors from "cors";
 import { pingSupabase } from "./supabase.js";
 
+import authRoutes from "./routes/auth.js";
+import organizationsRoutes from "./routes/organizations.js";
+import plantsRoutes from "./routes/plants.js";
+import mrvRoutes from "./routes/mrv.js";
+import verificationsRoutes from "./routes/verifications.js";
+import issuanceRoutes from "./routes/issuance.js";
+import registryRoutes from "./routes/registry.js";
+import marketRoutes from "./routes/market.js";
+import retirementsRoutes from "./routes/retirements.js";
+import auditRoutes from "./routes/audit.js";
+import integrityRoutes from "./routes/integrity.js";
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 const KEEP_ALIVE_SECRET = process.env.KEEP_ALIVE_SECRET;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "2mb" })); // covers CSV uploads pasted as text; large files should go via Storage instead
 
 // Basic request log — cheap observability, no secrets logged.
 app.use((req, _res, next) => {
@@ -43,6 +55,25 @@ app.get("/api/keep-alive", async (req, res) => {
   const result = await pingSupabase();
   const status = result.ok ? 200 : 502;
   res.status(status).json({ ...result, time: new Date().toISOString() });
+});
+
+// ---------- CarbonChain API ----------
+app.use("/api/auth", authRoutes);
+app.use("/api/organizations", organizationsRoutes);
+app.use("/api/plants", plantsRoutes);
+app.use("/api/mrv", mrvRoutes);
+app.use("/api/verifications", verificationsRoutes);
+app.use("/api/issuance", issuanceRoutes);
+app.use("/api/registry", registryRoutes);
+app.use("/api/market", marketRoutes);
+app.use("/api/retirements", retirementsRoutes);
+app.use("/api/audit", auditRoutes);
+app.use("/api/integrity", integrityRoutes);
+
+// Centralized fallback error handler — never leak stack traces to clients.
+app.use((err, _req, res, _next) => {
+  console.error("[unhandled]", err);
+  res.status(500).json({ error: "INTERNAL_ERROR", message: "An unexpected error occurred" });
 });
 
 app.listen(PORT, () => {

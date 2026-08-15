@@ -22,9 +22,18 @@
   --color-carbon-400: #7e89a0;
   --color-carbon-300: #a3adc2;
 
-  --color-brand-500: #10b981;
-  --color-brand-400: #34d399;
-  --color-brand-600: #059669;
+  /* Brand accent — muted emerald, no neon glow */
+  --color-brand-500: #0d9668;
+  --color-brand-400: #22a67a;
+  --color-brand-600: #087a56;
+
+  /* Secondary accent — amber, replaces purple/blue everywhere */
+  --color-accent-500: #b45309;
+  --color-accent-400: #d97706;
+
+  /* Status colors — kept neutral, no purple/blue */
+  --color-status-warn: #d97706;
+  --color-status-danger: #be123c;
 }
 
 body {
@@ -49,12 +58,14 @@ body {
   background: #383f50;
 }
 
+/* Toned down — subtle tint only, no radial bloom */
 .glow-card-green {
-  background: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.02) 50%, rgba(20, 23, 29, 1) 100%);
+  background: linear-gradient(135deg, rgba(13, 150, 104, 0.06) 0%, rgba(20, 23, 29, 1) 55%);
 }
 
-.glow-card-purple {
-  background: radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.02) 50%, rgba(20, 23, 29, 1) 100%);
+/* Replaces the old purple glow card with a neutral slate treatment */
+.glow-card-accent {
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.06) 0%, rgba(20, 23, 29, 1) 55%);
 }
 
 .glass-panel {
@@ -69,12 +80,12 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+/* Softened pulse — small, low-opacity, no large ring bloom */
 .beacon {
-  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-  animation: pulse-beacon 2s infinite;
+  animation: pulse-beacon-soft 2.4s infinite;
 }
-@keyframes pulse-beacon {
-  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
-  70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+@keyframes pulse-beacon-soft {
+  0% { box-shadow: 0 0 0 0 rgba(13, 150, 104, 0.35); }
+  70% { box-shadow: 0 0 0 4px rgba(13, 150, 104, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(13, 150, 104, 0); }
 }
