@@ -89,8 +89,8 @@ export function CarbonChainApp() {
     .filter((sec) => sec.items.length > 0);
 
   return (
-    <div className="flex h-screen bg-carbon-950 text-slate-100 overflow-hidden">
-      <aside className="w-64 bg-carbon-900 border-r border-carbon-800/80 flex flex-col justify-between shrink-0 select-none hidden md:flex">
+    <div className="flex h-screen text-slate-100 overflow-hidden">
+      <aside className="w-64 bg-carbon-900/90 backdrop-blur-md border-r border-carbon-800/80 flex flex-col justify-between shrink-0 select-none hidden md:flex">
         <div>
           <div className="p-6 border-b border-carbon-800/60">
             <div className="flex items-center space-x-2.5">

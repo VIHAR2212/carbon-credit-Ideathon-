@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { RippleLoader } from "@/components/ui/ripple-loader";
 
 export function LoginScreen() {
   const { signIn } = useAuth();
@@ -24,21 +25,21 @@ export function LoginScreen() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-carbon-950 p-6">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="w-full max-w-sm mx-auto">
         <div className="flex items-center space-x-2.5 justify-center mb-8">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-black font-extrabold text-lg">
             C
           </div>
           <div>
             <h1 className="font-extrabold tracking-tight text-white text-base leading-none">CARBONCHAIN</h1>
-            <span className="text-[10px] text-carbon-400 font-medium block mt-1 leading-tight">
+            <span className="text-[10px] text-carbon-200 font-medium block mt-1 leading-tight">
               Trusted infrastructure for India&apos;s carbon market
             </span>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-carbon-850 border border-carbon-750 rounded-3xl p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-carbon-850/90 backdrop-blur-md border border-carbon-750 rounded-3xl p-6 space-y-4 shadow-2xl">
           <div>
             <h2 className="text-base font-bold text-white">Sign in</h2>
             <p className="text-xs text-carbon-400 mt-1">Registry access is provisioned by your administrator.</p>
@@ -54,9 +55,10 @@ export function LoginScreen() {
               <input
                 type="email"
                 required
+                disabled={submitting}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-carbon-900 border border-carbon-750 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-brand-500 font-mono"
+                className="w-full bg-carbon-900 border border-carbon-750 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-brand-500 font-mono disabled:opacity-60"
                 placeholder="you@organization.com"
                 autoComplete="email"
               />
@@ -66,9 +68,10 @@ export function LoginScreen() {
               <input
                 type="password"
                 required
+                disabled={submitting}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-carbon-900 border border-carbon-750 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-brand-500 font-mono"
+                className="w-full bg-carbon-900 border border-carbon-750 rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-brand-500 font-mono disabled:opacity-60"
                 placeholder="••••••••"
                 autoComplete="current-password"
               />
@@ -78,13 +81,13 @@ export function LoginScreen() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-2.5 bg-brand-500 hover:bg-brand-400 disabled:opacity-60 disabled:cursor-not-allowed text-black font-bold text-xs rounded-xl transition-colors"
+            className="w-full py-2.5 bg-brand-500 hover:bg-brand-400 disabled:opacity-90 disabled:cursor-not-allowed text-black font-bold text-xs rounded-xl transition-colors flex items-center justify-center min-h-[38px]"
           >
-            {submitting ? "Signing in..." : "SIGN IN"}
+            {submitting ? <RippleLoader /> : "SIGN IN"}
           </button>
         </form>
 
-        <p className="text-center text-[11px] text-carbon-500 mt-4">
+        <p className="text-center text-[11px] text-carbon-300 mt-4">
           Prototype registry — demonstration data only, not an official CCTS/BEE system.
         </p>
       </div>

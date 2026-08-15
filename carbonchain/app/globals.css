@@ -89,3 +89,45 @@ body {
   70% { box-shadow: 0 0 0 4px rgba(13, 150, 104, 0); }
   100% { box-shadow: 0 0 0 0 rgba(13, 150, 104, 0); }
 }
+
+/* Ripple grid loader — used on sign-in submit */
+.ripple-loader {
+  --cell-size: 8px;
+  --cell-spacing: 1px;
+  --cells: 3;
+  --total-size: calc(var(--cells) * (var(--cell-size) + 2 * var(--cell-spacing)));
+  display: flex;
+  flex-wrap: wrap;
+  width: var(--total-size);
+  height: var(--total-size);
+}
+.ripple-loader .cell {
+  flex: 0 0 var(--cell-size);
+  margin: var(--cell-spacing);
+  background-color: transparent;
+  box-sizing: border-box;
+  border-radius: 3px;
+  animation: ripple-cell 1.5s ease infinite;
+}
+.ripple-loader .cell.d-1 { animation-delay: 100ms; }
+.ripple-loader .cell.d-2 { animation-delay: 200ms; }
+.ripple-loader .cell.d-3 { animation-delay: 300ms; }
+.ripple-loader .cell.d-4 { animation-delay: 400ms; }
+
+/* CarbonChain palette — emerald through amber, no neon green/cyan */
+.ripple-loader .cell:nth-child(1) { --cell-color: #0d9668; }
+.ripple-loader .cell:nth-child(2) { --cell-color: #22a67a; }
+.ripple-loader .cell:nth-child(3) { --cell-color: #3fae82; }
+.ripple-loader .cell:nth-child(4) { --cell-color: #6ba876; }
+.ripple-loader .cell:nth-child(5) { --cell-color: #97a26a; }
+.ripple-loader .cell:nth-child(6) { --cell-color: #c19b5e; }
+.ripple-loader .cell:nth-child(7) { --cell-color: #d18e42; }
+.ripple-loader .cell:nth-child(8) { --cell-color: #d9821f; }
+.ripple-loader .cell:nth-child(9) { --cell-color: #d97706; }
+
+@keyframes ripple-cell {
+  0% { background-color: transparent; }
+  30% { background-color: var(--cell-color); }
+  60% { background-color: transparent; }
+  100% { background-color: transparent; }
+}
