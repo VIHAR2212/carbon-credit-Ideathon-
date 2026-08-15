@@ -60,9 +60,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
       if (newSession) {
-        loadProfile();
+        setLoading(true);
+        loadProfile().finally(() => setLoading(false));
       } else {
         setProfile(null);
+        setLoading(false);
       }
     });
 
