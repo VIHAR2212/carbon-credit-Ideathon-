@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useAuth } from "@/lib/auth-context";
+import { LegalLinks, LegalModal, LegalDoc } from "./legal-modal";
 
 type Mode = "signin" | "signup";
 
@@ -12,9 +13,11 @@ export function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [signupNotice, setSignupNotice] = useState<string | null>(null);
+  const [legalDoc, setLegalDoc] = useState<LegalDoc>(null);
 
   const switchMode = (next: Mode) => {
     setMode(next);
@@ -35,6 +38,10 @@ export function LoginScreen() {
     }
     if (mode === "signup" && password.length < 8) {
       setLocalError("Password must be at least 8 characters.");
+      return;
+    }
+    if (mode === "signup" && !acceptedTerms) {
+      setLocalError("You must accept the Terms & Conditions and Privacy Policy to register.");
       return;
     }
 
@@ -67,7 +74,7 @@ export function LoginScreen() {
           <Image src="/logo-icon.png" alt="CarbonChain" width={36} height={36} className="w-9 h-9 shrink-0" priority />
           <div>
             <h1 className="font-extrabold tracking-tight text-white text-base leading-none">CARBONCHAIN</h1>
-            <span className="text-[10px] text-carbon-200 font-medium block mt-1 leading-tight">
+            <span className="text-[13px] text-carbon-200 font-medium block mt-1 leading-tight">
               Trusted infrastructure for India&apos;s carbon market
             </span>
           </div>
@@ -78,8 +85,8 @@ export function LoginScreen() {
             <button
               type="button"
               onClick={() => switchMode("signin")}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                mode === "signin" ? "bg-carbon-750 text-white" : "text-carbon-400 hover:text-slate-200"
+              className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                mode === "signin" ? "bg-carbon-750 text-white" : "text-carbon-300 hover:text-slate-200"
               }`}
             >
               Sign In
@@ -87,8 +94,8 @@ export function LoginScreen() {
             <button
               type="button"
               onClick={() => switchMode("signup")}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                mode === "signup" ? "bg-carbon-750 text-white" : "text-carbon-400 hover:text-slate-200"
+              className={`flex-1 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                mode === "signup" ? "bg-carbon-750 text-white" : "text-carbon-300 hover:text-slate-200"
               }`}
             >
               Register
@@ -97,7 +104,7 @@ export function LoginScreen() {
 
           <div>
             <h2 className="text-base font-bold text-white">{mode === "signin" ? "Sign in" : "Create an account"}</h2>
-            <p className="text-xs text-carbon-400 mt-1">
+            <p className="text-sm text-carbon-300 mt-1">
               {mode === "signin"
                 ? "Registry access is provisioned by your administrator."
                 : "New accounts still need a role assigned by a registry administrator before use."}
@@ -111,9 +118,9 @@ export function LoginScreen() {
             <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-xl">{localError}</div>
           )}
 
-          <div className="space-y-3 text-xs">
+          <div className="space-y-3 text-sm">
             <div>
-              <label className="text-carbon-400 block mb-1">Email</label>
+              <label className="text-carbon-300 block mb-1">Email</label>
               <input
                 type="email"
                 required
@@ -126,7 +133,7 @@ export function LoginScreen() {
               />
             </div>
             <div>
-              <label className="text-carbon-400 block mb-1">Password</label>
+              <label className="text-carbon-300 block mb-1">Password</label>
               <input
                 type="password"
                 required
@@ -141,7 +148,7 @@ export function LoginScreen() {
             </div>
             {mode === "signup" && (
               <div>
-                <label className="text-carbon-400 block mb-1">Confirm Password</label>
+                <label className="text-carbon-300 block mb-1">Confirm Password</label>
                 <input
                   type="password"
                   required
@@ -157,6 +164,29 @@ export function LoginScreen() {
             )}
           </div>
 
+          {mode === "signup" && (
+            <label className="flex items-start space-x-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                disabled={submitting}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded accent-[#0d9668] shrink-0"
+              />
+              <span className="text-sm text-carbon-300 leading-snug">
+                I have read and accept the{" "}
+                <button type="button" onClick={() => setLegalDoc("terms")} className="text-brand-400 underline hover:text-brand-500">
+                  Terms &amp; Conditions
+                </button>{" "}
+                and{" "}
+                <button type="button" onClick={() => setLegalDoc("privacy")} className="text-brand-400 underline hover:text-brand-500">
+                  Privacy Policy
+                </button>
+                .
+              </span>
+            </label>
+          )}
+
           <button
             type="submit"
             disabled={submitting}
@@ -166,10 +196,15 @@ export function LoginScreen() {
           </button>
         </form>
 
-        <p className="text-center text-[11px] text-carbon-300 mt-4">
-          Prototype registry — demonstration data only, not an official CCTS/BEE system.
-        </p>
+        <div className="text-center mt-4 space-y-2">
+          <p className="text-sm text-carbon-300">
+            Prototype registry — demonstration data only, not an official CCTS/BEE system.
+          </p>
+          <LegalLinks onOpen={setLegalDoc} className="text-sm" />
+        </div>
       </div>
+
+      <LegalModal doc={legalDoc} onClose={() => setLegalDoc(null)} />
     </div>
   );
 }

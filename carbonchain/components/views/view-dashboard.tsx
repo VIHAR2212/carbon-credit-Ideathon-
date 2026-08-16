@@ -72,13 +72,13 @@ export function ViewDashboard({ onNavigateTab }: { onNavigateTab: (tab: ViewId) 
               </span>
             </div>
             <h3 className="text-lg font-semibold text-slate-100 mt-2">Compliance readiness</h3>
-            <p className="text-xs text-carbon-300 leading-relaxed mt-1 max-w-xs">
+            <p className="text-sm text-carbon-300 leading-relaxed mt-1 max-w-xs">
               Share of submitted MRV reports that have completed independent verification.
             </p>
           </div>
 
           <div className="pt-4 border-t border-carbon-750/50 flex items-center justify-between z-10">
-            <span className="text-xs text-carbon-400">{mrvList.length} reporting period(s) tracked</span>
+            <span className="text-sm text-carbon-300">{mrvList.length} reporting period(s) tracked</span>
             <span
               className="text-xs font-medium text-emerald-400 flex items-center gap-1 cursor-pointer hover:underline"
               onClick={() => onNavigateTab("mrv")}
@@ -98,20 +98,20 @@ export function ViewDashboard({ onNavigateTab }: { onNavigateTab: (tab: ViewId) 
 
           <div className="grid grid-cols-3 gap-4">
             <div className="bg-carbon-900/60 border border-carbon-750/70 rounded-2xl p-5">
-              <span className="text-xs text-carbon-400 block uppercase tracking-wider">Available</span>
+              <span className="text-sm text-carbon-300 block uppercase tracking-wider">Available</span>
               <div className="text-2xl font-mono font-extrabold text-emerald-400 mt-2">{registryCounts?.available ?? "—"}</div>
             </div>
             <div className="bg-carbon-900/60 border border-carbon-750/70 rounded-2xl p-5">
-              <span className="text-xs text-carbon-400 block uppercase tracking-wider">Locked / In Transfer</span>
+              <span className="text-sm text-carbon-300 block uppercase tracking-wider">Locked / In Transfer</span>
               <div className="text-2xl font-mono font-extrabold text-carbon-200 mt-2">{registryCounts?.inTransfer ?? "—"}</div>
             </div>
             <div className="bg-carbon-900/60 border border-carbon-750/70 rounded-2xl p-5">
-              <span className="text-xs text-carbon-400 block uppercase tracking-wider">Retired</span>
+              <span className="text-sm text-carbon-300 block uppercase tracking-wider">Retired</span>
               <div className="text-2xl font-mono font-extrabold text-amber-400 mt-2">{registryCounts?.retired ?? "—"}</div>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-carbon-800 text-[11px] text-carbon-400 leading-tight">
+          <div className="mt-4 pt-3 border-t border-carbon-800 text-sm text-carbon-300 leading-snug">
             Live counts pulled from the registry — reflects real CCC status across the network.
           </div>
         </div>
@@ -140,13 +140,13 @@ export function ViewDashboard({ onNavigateTab }: { onNavigateTab: (tab: ViewId) 
 
         <div className="overflow-x-auto mt-4">
           {loading ? (
-            <div className="py-8 text-center text-xs text-carbon-400">Loading MRV activity...</div>
+            <div className="py-8 text-center text-sm text-carbon-300">Loading MRV activity...</div>
           ) : filteredMRV.length === 0 ? (
-            <div className="py-8 text-center text-xs text-carbon-400">No MRV reports yet. Upload emissions data to get started.</div>
+            <div className="py-8 text-center text-sm text-carbon-300">No MRV reports yet. Upload emissions data to get started.</div>
           ) : (
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="text-carbon-400 uppercase font-mono text-[11px] border-b border-carbon-800/80">
+                <tr className="text-carbon-300 uppercase font-mono text-xs border-b border-carbon-800/80">
                   <th className="py-3 px-4 font-normal">Plant & MRV ID</th>
                   <th className="py-3 px-4 font-normal">Reporting Period</th>
                   <th className="py-3 px-4 font-normal">Emissions</th>
@@ -161,7 +161,7 @@ export function ViewDashboard({ onNavigateTab }: { onNavigateTab: (tab: ViewId) 
                       <div className="font-semibold text-slate-200 group-hover:text-brand-400 transition-colors">
                         {row.plants?.name ?? "—"}
                       </div>
-                      <div className="font-mono text-[10px] text-carbon-400 mt-0.5">
+                      <div className="font-mono text-xs text-carbon-300 mt-0.5">
                         {row.mrv_number} · {row.plants?.location ?? ""}
                       </div>
                     </td>
@@ -190,7 +190,7 @@ export function ViewDashboard({ onNavigateTab }: { onNavigateTab: (tab: ViewId) 
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-slate-200">CCC Market</h3>
-                <p className="text-[11px] text-carbon-400">Live Order Book Summary</p>
+                <p className="text-sm text-carbon-300">Live Order Book Summary</p>
               </div>
             </div>
             <button onClick={() => onNavigateTab("marketplace")} className="text-xs font-medium text-brand-400 hover:text-brand-300">
@@ -207,11 +207,11 @@ export function ViewDashboard({ onNavigateTab }: { onNavigateTab: (tab: ViewId) 
 
           <div className="grid grid-cols-2 gap-4 pt-4 border-t border-carbon-750/60 font-mono">
             <div>
-              <span className="text-[11px] text-carbon-400 block font-sans">Active Orders</span>
+              <span className="text-sm text-carbon-300 block font-sans">Active Orders</span>
               <span className="text-base font-bold text-slate-200">{orderBook?.activeOrders ?? "—"}</span>
             </div>
             <div>
-              <span className="text-[11px] text-carbon-400 block font-sans">Open Depth</span>
+              <span className="text-sm text-carbon-300 block font-sans">Open Depth</span>
               <span className="text-base font-bold text-slate-200">
                 {orderBook ? orderBook.sells.length + orderBook.buys.length : "—"} levels
               </span>
@@ -227,7 +227,7 @@ export function ViewDashboard({ onNavigateTab }: { onNavigateTab: (tab: ViewId) 
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-slate-200">Registry Integrity</h3>
-                <p className="text-[11px] text-carbon-400">Reconciliation & fraud interlocks</p>
+                <p className="text-sm text-carbon-300">Reconciliation & fraud interlocks</p>
               </div>
             </div>
           </div>
