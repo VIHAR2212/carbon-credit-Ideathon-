@@ -14,6 +14,7 @@ import marketRoutes from "./routes/market.js";
 import retirementsRoutes from "./routes/retirements.js";
 import auditRoutes from "./routes/audit.js";
 import integrityRoutes from "./routes/integrity.js";
+import registrationRequestsRoutes from "./routes/registration-requests.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -69,6 +70,7 @@ app.use("/api/market", marketRoutes);
 app.use("/api/retirements", retirementsRoutes);
 app.use("/api/audit", auditRoutes);
 app.use("/api/integrity", integrityRoutes);
+app.use("/api/registration-requests", registrationRequestsRoutes);
 
 // Centralized fallback error handler — never leak stack traces to clients.
 app.use((err, _req, res, _next) => {

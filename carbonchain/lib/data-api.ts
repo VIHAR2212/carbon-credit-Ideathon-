@@ -117,6 +117,20 @@ export interface AuditLogEntry {
   created_at: string;
 }
 
+export interface RegistrationRequest {
+  id: string;
+  auth_user_id: string;
+  email: string;
+  company_name: string;
+  facility_type: string | null;
+  address_line: string;
+  city: string;
+  state: string;
+  requested_role: string | null;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  created_at: string;
+}
+
 export interface Retirement {
   id: string;
   retirement_number: string;
@@ -206,5 +220,23 @@ export const dataApi = {
       api.get<{ verifierAgencies: { id: string; accreditation_id: string; accreditation_body: string; organizations: { name: string } }[] }>(
         "/api/organizations/verifier-agencies"
       ),
+  },
+  registrationRequests: {
+    submit: (body: {
+      companyName: string;
+      facilityType?: string;
+      addressLine: string;
+      city: string;
+      state: string;
+      requestedRole?: string;
+    }) => api.post<{ registrationRequest: RegistrationRequest }>("/api/registration-requests", body),
+    list: (status?: string) =>
+      api.get<{ registrationRequests: RegistrationRequest[] }>(
+        `/api/registration-requests${status ? `?status=${status}` : ""}`
+      ),
+    approve: (id: string, body: { role: string; organizationId?: string; orgType?: string }) =>
+      api.post<{ registrationRequest: RegistrationRequest }>(`/api/registration-requests/${id}/approve`, body),
+    reject: (id: string, notes?: string) =>
+      api.post<{ registrationRequest: RegistrationRequest }>(`/api/registration-requests/${id}/reject`, { notes }),
   },
 };

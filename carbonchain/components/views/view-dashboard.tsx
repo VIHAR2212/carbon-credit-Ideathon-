@@ -89,24 +89,56 @@ export function ViewDashboard({ onNavigateTab }: { onNavigateTab: (tab: ViewId) 
         </div>
 
         <div className="lg:col-span-8 rounded-3xl p-6 bg-carbon-850 border border-carbon-750 flex flex-col justify-between">
-          <div className="flex items-center space-x-2 pb-4">
-            <div className="p-1.5 rounded-lg bg-carbon-750 text-carbon-300">
-              <Icons.Activity />
+          <div className="flex items-center justify-between pb-4">
+            <div className="flex items-center space-x-2">
+              <div className="p-1.5 rounded-lg bg-carbon-750 text-carbon-300">
+                <Icons.Activity />
+              </div>
+              <span className="text-sm font-semibold tracking-wide text-slate-200">Emissions by Facility</span>
             </div>
-            <span className="text-sm font-semibold tracking-wide text-slate-200">Registry Snapshot</span>
+            {mrvList.length > 0 && (
+              <span className="text-2xl font-extrabold text-white font-mono">
+                {mrvList
+                  .reduce((sum, m) => sum + (m.mrv_calculations?.total_emissions_tco2e ?? 0), 0)
+                  .toLocaleString()}{" "}
+                <span className="text-xs font-sans font-normal text-carbon-400">tCO₂e total</span>
+              </span>
+            )}
           </div>
+
+          {mrvList.length > 0 && (
+            <div className="flex items-end gap-2 h-28 px-1 mb-4">
+              {mrvList.slice(0, 8).map((m) => {
+                const value = m.mrv_calculations?.total_emissions_tco2e ?? 0;
+                const max = Math.max(...mrvList.map((r) => r.mrv_calculations?.total_emissions_tco2e ?? 0), 1);
+                const heightPct = Math.max((value / max) * 100, 4);
+                return (
+                  <div key={m.id} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+                    <div
+                      style={{ height: `${heightPct}%` }}
+                      className="w-full bg-emerald-500/80 group-hover:bg-emerald-400 rounded-t-sm transition-colors"
+                      title={`${m.plants?.name ?? "—"}: ${value.toLocaleString()} tCO₂e`}
+                    />
+                    <span className="text-[9px] font-mono text-carbon-400 truncate w-full text-center">
+                      {(m.plants?.name ?? "—").split(" ")[0]}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           <div className="grid grid-cols-3 gap-4">
             <div className="bg-carbon-900/60 border border-carbon-750/70 rounded-2xl p-5">
-              <span className="text-sm text-carbon-300 block uppercase tracking-wider">Available</span>
+              <span className="text-sm text-carbon-300 block tracking-wide">Available</span>
               <div className="text-2xl font-mono font-extrabold text-emerald-400 mt-2">{registryCounts?.available ?? "—"}</div>
             </div>
             <div className="bg-carbon-900/60 border border-carbon-750/70 rounded-2xl p-5">
-              <span className="text-sm text-carbon-300 block uppercase tracking-wider">Locked / In Transfer</span>
+              <span className="text-sm text-carbon-300 block tracking-wide">Locked / In Transfer</span>
               <div className="text-2xl font-mono font-extrabold text-carbon-200 mt-2">{registryCounts?.inTransfer ?? "—"}</div>
             </div>
             <div className="bg-carbon-900/60 border border-carbon-750/70 rounded-2xl p-5">
-              <span className="text-sm text-carbon-300 block uppercase tracking-wider">Retired</span>
+              <span className="text-sm text-carbon-300 block tracking-wide">Retired</span>
               <div className="text-2xl font-mono font-extrabold text-amber-400 mt-2">{registryCounts?.retired ?? "—"}</div>
             </div>
           </div>
