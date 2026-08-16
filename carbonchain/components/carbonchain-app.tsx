@@ -13,8 +13,11 @@ import { ViewIssuance } from "./views/view-issuance";
 import { ViewAudit } from "./views/view-audit";
 import { ViewRetirement } from "./views/view-retirement";
 import { useAuth, UserRole } from "@/lib/auth-context";
-import { dataApi, Anomaly, CarbonCredit } from "@/lib/data-api";
+import { dataApi, Anomaly } from "@/lib/data-api";
 import { ViewId } from "@/lib/types";
+import { SignOutConfirm } from "./shared/signout-confirm";
+import { ThemeToggle } from "./shared/theme-toggle";
+import { LegalLinks, LegalModal, LegalDoc } from "./shared/legal-modal";
 
 type NavItem = { id: ViewId; label: string; icon: () => React.JSX.Element; badge?: number; roles?: UserRole[] };
 
@@ -23,6 +26,8 @@ export function CarbonChainApp() {
   const [currentView, setCurrentView] = useState<ViewId>("dashboard");
   const [selectedCccId, setSelectedCccId] = useState<string | null>(null);
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
+  const [showSignOut, setShowSignOut] = useState(false);
+  const [legalDoc, setLegalDoc] = useState<LegalDoc>(null);
 
   const refreshAnomalies = useCallback(async () => {
     try {
@@ -98,7 +103,7 @@ export function CarbonChainApp() {
               <Image src="/logo-icon.png" alt="CarbonChain" width={32} height={32} className="w-8 h-8 shrink-0" priority />
               <div>
                 <h1 className="font-extrabold tracking-tight text-white text-base leading-none">CARBONCHAIN</h1>
-                <span className="text-[10px] text-carbon-400 font-medium block mt-1 leading-tight">
+                <span className="text-[13px] text-carbon-300 font-medium block mt-1 leading-tight">
                   Trusted infrastructure for India&apos;s carbon market
                 </span>
               </div>
@@ -108,7 +113,7 @@ export function CarbonChainApp() {
           <div className="px-3 py-4 space-y-6 overflow-y-auto max-h-[calc(100vh-140px)]">
             {visibleSections.map((sec, idx) => (
               <div key={idx} className="space-y-1">
-                <div className="px-3 text-[10px] font-mono tracking-wider text-carbon-400 uppercase font-semibold">{sec.title}</div>
+                <div className="px-3 text-xs font-mono tracking-wider text-carbon-300 uppercase font-semibold">{sec.title}</div>
                 {sec.items.map((item) => {
                   const Icon = item.icon;
                   const active = currentView === item.id;
@@ -144,17 +149,24 @@ export function CarbonChainApp() {
           </div>
         </div>
 
-        <div className="p-4 border-t border-carbon-800/80 bg-carbon-900/60">
-          <button onClick={() => signOut()} className="w-full flex items-center space-x-3 text-left hover:bg-carbon-850 rounded-xl p-1.5 transition-colors">
+        <div className="p-4 border-t border-carbon-800/80 bg-carbon-900/60 space-y-1.5">
+          <button onClick={() => setShowSignOut(true)} className="w-full flex items-center space-x-3 text-left hover:bg-carbon-850 rounded-xl p-1.5 transition-colors">
             <div className="w-8 h-8 rounded-full bg-carbon-750 border border-carbon-600 flex items-center justify-center font-mono font-bold text-xs text-brand-400">
               {profile.fullName.slice(0, 2).toUpperCase()}
             </div>
             <div className="truncate">
-              <div className="text-xs font-semibold text-slate-200 truncate">{profile.fullName}</div>
-              <div className="text-[10px] font-mono text-carbon-400 truncate">
+              <div className="text-sm font-semibold text-slate-200 truncate">{profile.fullName}</div>
+              <div className="text-xs font-mono text-carbon-300 truncate">
                 {profile.role.replace(/_/g, " ")} · {profile.organization.name}
               </div>
             </div>
+          </button>
+          <button
+            onClick={() => setShowSignOut(true)}
+            className="w-full flex items-center justify-center space-x-2 py-1.5 rounded-xl text-xs font-semibold text-carbon-300 hover:text-rose-400 hover:bg-carbon-850 border border-carbon-750 transition-colors"
+          >
+            <Icons.LogOut />
+            <span>Sign out</span>
           </button>
         </div>
       </aside>
@@ -163,7 +175,7 @@ export function CarbonChainApp() {
         <header className="h-16 bg-carbon-900/80 border-b border-carbon-800/80 px-6 flex items-center justify-between shrink-0 backdrop-blur-md z-30">
           <div className="flex items-center space-x-3">
             <div className="md:hidden font-extrabold text-sm text-brand-400">CARBONCHAIN</div>
-            <span className="text-xs font-mono text-carbon-400 hidden sm:inline-block">
+            <span className="text-sm font-mono text-carbon-300 hidden sm:inline-block">
               Scheme: <span className="text-slate-200 font-medium">India CCTS FY2026 (Prototype)</span>
             </span>
           </div>
@@ -171,7 +183,8 @@ export function CarbonChainApp() {
           <HeaderGlobalSearch onSelectResult={handleSelectSearchResult} />
 
           <div className="flex items-center space-x-3">
-            <span className="text-xs font-mono text-carbon-400 hidden lg:inline-block">{profile.organization.name}</span>
+            <span className="text-sm font-mono text-carbon-300 hidden lg:inline-block">{profile.organization.name}</span>
+            <ThemeToggle />
           </div>
         </header>
 
@@ -199,8 +212,25 @@ export function CarbonChainApp() {
           {currentView === "audit" && <ViewAudit />}
 
           {currentView === "retirement" && <ViewRetirement />}
+
+          <footer className="mt-10 pt-4 border-t border-carbon-800/80 flex flex-col sm:flex-row items-center justify-between gap-2 pb-2">
+            <p className="text-sm text-carbon-400">
+              CarbonChain prototype registry — demonstration data only, not an official CCTS/BEE system.
+            </p>
+            <LegalLinks onOpen={setLegalDoc} className="text-sm" />
+          </footer>
         </div>
       </main>
+
+      <SignOutConfirm
+        open={showSignOut}
+        onCancel={() => setShowSignOut(false)}
+        onConfirm={() => {
+          setShowSignOut(false);
+          signOut();
+        }}
+      />
+      <LegalModal doc={legalDoc} onClose={() => setLegalDoc(null)} />
     </div>
   );
 }
