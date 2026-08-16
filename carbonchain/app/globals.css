@@ -10,7 +10,12 @@
   --color-foreground: var(--foreground);
   --font-sans: 'Inter', 'Inter Fallback', ui-sans-serif, sans-serif;
   --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', ui-monospace, monospace;
+}
 
+/* Palette kept as plain @theme (not inline) so utilities emit
+   var(--color-*) references — required for the light-theme remapping
+   on html[data-theme="light"] below. */
+@theme {
   --color-carbon-950: #0a0b0d;
   --color-carbon-900: #101216;
   --color-carbon-850: #14171d;
@@ -37,10 +42,105 @@
 }
 
 body {
-  background-color: #0a0b0d;
-  color: #f1f5f9;
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* ---- Animated gradient background layer ----
+   Dark: emerald gradients drifting over near-black.
+   Light: the same drifting motion with emerald over a light base. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 40rem at 15% 10%, rgba(13, 150, 104, 0.14), transparent 60%),
+    radial-gradient(50rem 35rem at 85% 20%, rgba(34, 166, 122, 0.10), transparent 60%),
+    radial-gradient(55rem 40rem at 50% 100%, rgba(13, 150, 104, 0.08), transparent 65%);
+  background-size: 200% 200%;
+  animation: gradient-drift 22s ease-in-out infinite alternate;
+}
+
+html[data-theme="light"] body::before {
+  background:
+    radial-gradient(60rem 40rem at 15% 10%, rgba(13, 150, 104, 0.18), transparent 60%),
+    radial-gradient(50rem 35rem at 85% 20%, rgba(190, 242, 220, 0.35), transparent 60%),
+    radial-gradient(55rem 40rem at 50% 100%, rgba(13, 150, 104, 0.10), transparent 65%);
+  background-size: 200% 200%;
+}
+
+@keyframes gradient-drift {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 30% 100%; }
+}
+
+/* ---- Light theme palette overrides ----
+   The app is styled through the carbon-* custom properties, so remapping
+   them here flips the whole UI without touching every component. */
+html[data-theme="light"] {
+  --background: #f3f6f4;
+  --foreground: #101216;
+
+  --color-carbon-950: #e7ece9;
+  --color-carbon-900: #ffffff;
+  --color-carbon-850: #f6f8f6;
+  --color-carbon-800: #eceff0;
+  --color-carbon-750: #e2e7e6;
+  --color-carbon-700: #d3dad8;
+  --color-carbon-600: #b3bcbc;
+  --color-carbon-500: #7d8a8c;
+  --color-carbon-400: #5b6b66;
+  --color-carbon-300: #3d4a47;
+
+  --color-brand-500: #0d9668;
+  --color-brand-400: #087a56;
+  --color-brand-600: #065f46;
+
+  color-scheme: light;
+}
+
+/* Some components hardcode light text colors; remap them for light mode.
+   Higher specificity + later declaration beats the Tailwind utilities. */
+html[data-theme="light"] .text-white,
+html[data-theme="light"] .text-slate-100,
+html[data-theme="light"] .text-slate-200,
+html[data-theme="light"] .text-slate-300 {
+  color: #101216 !important;
+}
+
+html[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #e7ece9;
+}
+html[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #c3ccc9;
+}
+html[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: #a8b4b0;
+}
+
+html[data-theme="light"] .glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="light"] .glass-pill {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+html[data-theme="light"] .glow-card-green {
+  background: linear-gradient(135deg, rgba(13, 150, 104, 0.10) 0%, rgba(255, 255, 255, 1) 55%);
+}
+
+html[data-theme="light"] .glow-card-accent {
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.10) 0%, rgba(255, 255, 255, 1) 55%);
 }
 
 ::-webkit-scrollbar {
