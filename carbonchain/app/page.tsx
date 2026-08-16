@@ -10,8 +10,8 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-6">
-        <RippleLoader cellSize={22} />
+      <div className="min-h-screen flex flex-col items-center justify-center gap-8">
+        <RippleLoader cellSize={42} cellSpacing={4} />
         <div className="text-carbon-300 text-xs font-mono tracking-wide">Loading CarbonChain...</div>
       </div>
     );
