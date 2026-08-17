@@ -42,7 +42,6 @@
 }
 
 body {
-  background-color: var(--background);
   color: var(--foreground);
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
@@ -52,14 +51,18 @@ body {
 
 /* ---- Animated gradient background layer ----
    Dark: emerald gradients drifting over near-black.
-   Light: the same drifting motion with emerald over a light base. */
+   Light: the same drifting motion with emerald over a light base.
+   The base color lives HERE (not on body) — body itself is left
+   transparent so this pseudo-element is actually visible instead of
+   being painted over by an opaque body background-color. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
+  background-color: var(--background);
+  background-image:
     radial-gradient(60rem 40rem at 15% 10%, rgba(13, 150, 104, 0.14), transparent 60%),
     radial-gradient(50rem 35rem at 85% 20%, rgba(34, 166, 122, 0.10), transparent 60%),
     radial-gradient(55rem 40rem at 50% 100%, rgba(13, 150, 104, 0.08), transparent 65%);
@@ -68,9 +71,10 @@ body::before {
 }
 
 html[data-theme="light"] body::before {
-  background:
+  background-color: var(--background);
+  background-image:
     radial-gradient(60rem 40rem at 15% 10%, rgba(13, 150, 104, 0.18), transparent 60%),
-    radial-gradient(50rem 35rem at 85% 20%, rgba(190, 242, 220, 0.35), transparent 60%),
+    radial-gradient(50rem 35rem at 85% 20%, rgba(250, 204, 21, 0.16), transparent 60%),
     radial-gradient(55rem 40rem at 50% 100%, rgba(13, 150, 104, 0.10), transparent 65%);
   background-size: 200% 200%;
 }

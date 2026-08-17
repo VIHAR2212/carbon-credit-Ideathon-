@@ -106,14 +106,14 @@ export function ViewDashboard({ onNavigateTab }: { onNavigateTab: (tab: ViewId) 
             )}
           </div>
 
-          {mrvList.length > 0 && (
-            <div className="flex items-end gap-2 h-28 px-1 mb-4">
+          {mrvList.length > 1 && (
+            <div className="flex items-end justify-start gap-3 h-28 px-1 mb-4">
               {mrvList.slice(0, 8).map((m) => {
                 const value = m.mrv_calculations?.total_emissions_tco2e ?? 0;
                 const max = Math.max(...mrvList.map((r) => r.mrv_calculations?.total_emissions_tco2e ?? 0), 1);
                 const heightPct = Math.max((value / max) * 100, 4);
                 return (
-                  <div key={m.id} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+                  <div key={m.id} className="w-14 flex flex-col items-center gap-1.5 h-full justify-end group shrink-0">
                     <div
                       style={{ height: `${heightPct}%` }}
                       className="w-full bg-emerald-500/80 group-hover:bg-emerald-400 rounded-t-sm transition-colors"
