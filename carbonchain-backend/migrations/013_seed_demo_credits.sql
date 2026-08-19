@@ -80,20 +80,47 @@ select
     when gs <= 6 then 'AVAILABLE'
     when gs <= 8 then 'LOCKED'
     else 'RETIRED'
-  end
+  end::ccc_status
 from generate_series(1, 10) gs, mrv_reports r
 where r.mrv_number = 'MRV-DEMO-00001'
 on conflict (ccc_id) do nothing;
 
 -- ---------- Genesis events for each seeded credit (keeps provenance real) ----------
+-- Every credit gets an ISSUED event reflecting its actual starting status —
+-- LOCKED/RETIRED credits get a second event showing how they got there, so
+-- the provenance timeline stays internally consistent with cc.status.
 insert into carbon_credit_events (ccc_id, event_type, previous_status, new_status, event_hash, metadata)
 select
-  cc.ccc_id, 'ISSUED', null, 'AVAILABLE',
+  cc.ccc_id, 'ISSUED', null::ccc_status, 'AVAILABLE'::ccc_status,
   encode(sha256((cc.ccc_id || '|ISSUED||AVAILABLE|' || now()::text || '|GENESIS')::bytea), 'hex'),
   jsonb_build_object('seed', true, 'batch_id', cc.batch_id)
 from carbon_credits cc
 where cc.batch_id = 'd1111111-1111-1111-1111-111111111111'
   and not exists (select 1 from carbon_credit_events e where e.ccc_id = cc.ccc_id);
+
+-- Follow-up LOCKED event for the seeded LOCKED credits.
+insert into carbon_credit_events (ccc_id, event_type, previous_status, new_status, event_hash, metadata)
+select
+  cc.ccc_id, 'LOCKED', 'AVAILABLE'::ccc_status, 'LOCKED'::ccc_status,
+  encode(sha256((cc.ccc_id || '|LOCKED|AVAILABLE|LOCKED|' || now()::text || '|SEED')::bytea), 'hex'),
+  jsonb_build_object('seed', true, 'reason', 'demo sell order')
+from carbon_credits cc
+where cc.batch_id = 'd1111111-1111-1111-1111-111111111111' and cc.status = 'LOCKED'
+  and not exists (
+    select 1 from carbon_credit_events e where e.ccc_id = cc.ccc_id and e.event_type = 'LOCKED'
+  );
+
+-- Follow-up RETIRED event for the seeded RETIRED credits.
+insert into carbon_credit_events (ccc_id, event_type, previous_status, new_status, event_hash, metadata)
+select
+  cc.ccc_id, 'RETIRED', 'AVAILABLE'::ccc_status, 'RETIRED'::ccc_status,
+  encode(sha256((cc.ccc_id || '|RETIRED|AVAILABLE|RETIRED|' || now()::text || '|SEED')::bytea), 'hex'),
+  jsonb_build_object('seed', true, 'reason', 'DEMO seed — mandatory CCTS compliance surrender FY2026.')
+from carbon_credits cc
+where cc.batch_id = 'd1111111-1111-1111-1111-111111111111' and cc.status = 'RETIRED'
+  and not exists (
+    select 1 from carbon_credit_events e where e.ccc_id = cc.ccc_id and e.event_type = 'RETIRED'
+  );
 
 -- Retirement records for the 2 seeded RETIRED credits, so their status is
 -- consistent with a real retirements row (matches the RETIRED status set above).
